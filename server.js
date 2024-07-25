@@ -62,6 +62,15 @@ app.post('/appointments', async (req, res) => {
   }
 });
 
+app.delete('/appointments/:id', async (req, res) => {
+  try {
+    await Appointment.findByIdAndDelete(req.params.id);
+    res.status(204).end(); // No content
+  } catch (err) {
+    res.status(500).json({ message: 'Error deleting appointment', error: err });
+  }
+});
+
 // Route to get a specific appointment by ID
 app.get('/appointments/:id', async (req, res) => {
   try {

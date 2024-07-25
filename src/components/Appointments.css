@@ -46,10 +46,49 @@
   .appointment-list {
     list-style-type: none;
     padding: 0;
+    margin: 0;
   }
   
+  /* Container for each appointment item */
   .appointment-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     padding: 10px;
     border-bottom: 1px solid #ddd;
+  }
+  
+  /* Flexbox layout for name and date */
+  .appointment-details {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  /* Styling for the appointment name */
+  .appointment-name {
+    flex: 1;
+    margin-right: 20px; /* Space between name and date */
+  }
+  
+  /* Styling for the appointment date */
+  .appointment-date {
+    text-align: right; /* Align date to the right */
+  }
+  
+  .delete-button {
+    background-color: #f44336; /* Red background */
+    border: none;
+    color: white; /* White text */
+    padding: 5px 10px;
+    text-align: center;
+    font-size: 0.9rem;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+  }
+  
+  .delete-button:hover {
+    background-color: #d32f2f; /* Darker red */
   }
   

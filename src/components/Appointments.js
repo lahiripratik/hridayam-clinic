@@ -7,14 +7,16 @@ function Appointments() {
   const [newAppointment, setNewAppointment] = useState({ name: '', date: '' });
   const navigate = useNavigate();
 
-
   // Fetch appointments from the backend when the component mounts
   useEffect(() => {
     fetch('http://localhost:5001/appointments')
       .then(response => response.json())
       .then(data => {
         console.log('Fetched appointments:', data);
-        setAppointments(Array.isArray(data) ? data : []);
+        const sortedAppointments = Array.isArray(data)
+          ? data.sort((a, b) => new Date(a.date) - new Date(b.date))
+          : [];
+        setAppointments(sortedAppointments);
       })
       .catch(error => console.error('Error fetching appointments:', error));
   }, []);
@@ -30,16 +32,44 @@ function Appointments() {
       body: JSON.stringify(newAppointment),
     })
       .then(response => response.json())
-      .then(data => setAppointments([...appointments, data]))
+      .then(data => {
+        // Add the new appointment to the list
+        const updatedAppointments = [...appointments, data];
+        // Sort the appointments
+        const sortedAppointments = updatedAppointments.sort((a, b) => new Date(a.date) - new Date(b.date));
+        // Update the state
+        setAppointments(sortedAppointments);
+      })
       .catch(error => console.error('Error adding appointment:', error));
-
+  
+    // Reset the form
     setNewAppointment({ name: '', date: '' });
+  };
+
+  const deleteAppointment = (id) => {
+    fetch(`http://localhost:5001/appointments/${id}`, {
+      method: 'DELETE',
+    })
+      .then(() => {
+        setAppointments(appointments.filter(appointment => appointment._id !== id));
+      })
+      .catch(error => console.error('Error deleting appointment:', error));
   };
 
   const goHome = () => {
     navigate('/');
   };
-  
+
+  const isToday = (dateString) => {
+    const today = new Date().toISOString().split('T')[0];
+    return dateString === today;
+  };
+
+  const formatDate = (dateString) => {
+    const [year, month, day] = dateString.split('-');
+    return `${day}-${month}-${year}`;
+  };
+
   return (
     <div className="appointments-container">
       <h1>Manage Appointments</h1>
@@ -60,11 +90,16 @@ function Appointments() {
         />
         <button type="submit" className="submit-button">Add Appointment</button>
       </form>
-      <ul className="appointment-list">
+      <ul>
         {Array.isArray(appointments) ? (
-          appointments.map((appointment, index) => (
-            <li key={index} className="appointment-item">
-              {appointment.name} - {appointment.date}
+          appointments.map((appointment) => (
+            <li
+              key={appointment._id}
+              className="appointment-item"
+              style={{ backgroundColor: isToday(appointment.date) ? '#e9f5ff' : 'white' }}
+            >
+              {appointment.name} - {formatDate(appointment.date)}
+              <button className="delete-button" onClick={() => deleteAppointment(appointment._id)}>Delete</button>
             </li>
           ))
         ) : (
