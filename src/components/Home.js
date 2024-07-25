@@ -14,8 +14,8 @@ function Home() {
 
   return (
     <div className="home-container">
-      <h1>Welcome to the Appointment Scheduler</h1>
-      <p>Manage your appointments efficiently with our easy-to-use system. Click below to view or add appointments.</p>
+      <h1>Hridayam Clinic Appointment Manager</h1>
+      <p>Manage appointments efficiently. Click below to view or add appointments.</p>
       <button className="appointments-button" onClick={goToAppointments}>View Appointments</button>
     </div>
   );

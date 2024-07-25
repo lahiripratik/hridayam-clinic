@@ -24,12 +24,20 @@ function Appointments() {
   // Add a new appointment and post it to the backend
   const addAppointment = (e) => {
     e.preventDefault();
+    if (!newAppointment.name) {
+      alert('Patient name is required');
+      return;
+    }
+    const appointmentToAdd = {
+      ...newAppointment,
+      date: newAppointment.date || new Date().toISOString().split('T')[0] // Default to today’s date if no date is provided
+    };
     fetch('http://localhost:5001/appointments', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(newAppointment),
+      body: JSON.stringify(appointmentToAdd),
     })
       .then(response => response.json())
       .then(data => {
@@ -41,7 +49,7 @@ function Appointments() {
         setAppointments(sortedAppointments);
       })
       .catch(error => console.error('Error adding appointment:', error));
-  
+
     // Reset the form
     setNewAppointment({ name: '', date: '' });
   };
@@ -61,11 +69,13 @@ function Appointments() {
   };
 
   const isToday = (dateString) => {
+    if (!dateString) return false;
     const today = new Date().toISOString().split('T')[0];
     return dateString === today;
   };
 
   const formatDate = (dateString) => {
+    if (!dateString) return '';
     const [year, month, day] = dateString.split('-');
     return `${day}-${month}-${year}`;
   };
@@ -88,22 +98,18 @@ function Appointments() {
           onChange={(e) => setNewAppointment({ ...newAppointment, date: e.target.value })}
           className="input-field"
         />
-        <button type="submit" className="submit-button">Add Appointment</button>
+        <button type="submit" className="submit-button" disabled={!newAppointment.name}>Add Appointment</button>
       </form>
-      <ul>
-        {Array.isArray(appointments) ? (
+      <ul className="appointment-list">
+        {appointments.length > 0 ? (
           appointments.map((appointment) => (
-            <li
-              key={appointment._id}
-              className="appointment-item"
-              style={{ backgroundColor: isToday(appointment.date) ? '#e9f5ff' : 'white' }}
-            >
+            <li key={appointment._id} className={`appointment-item ${isToday(appointment.date) ? 'today' : ''}`}>
               {appointment.name} - {formatDate(appointment.date)}
               <button className="delete-button" onClick={() => deleteAppointment(appointment._id)}>Delete</button>
             </li>
           ))
         ) : (
-          <p>No appointments found.</p>
+          <p>No appointments pending.</p>
         )}
       </ul>
     </div>
