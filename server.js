@@ -22,8 +22,11 @@ mongoose.connect(mongoURI, {
 // Define a schema and model for appointments
 const appointmentSchema = new mongoose.Schema({
   name: { type: String, required: true },
-  date: { type: String, required: true }
+  date: { type: String, required: true },
+  status: { type: String } // Remove the default value
 });
+
+
 
 const Appointment = mongoose.model('Appointment', appointmentSchema);
 
@@ -46,13 +49,13 @@ app.get('/appointments', async (req, res) => {
 
 // Route to add a new appointment
 app.post('/appointments', async (req, res) => {
-  const { name, date } = req.body;
+  const { name, date, status } = req.body;
   
   if (!name || !date) {
     return res.status(400).json({ message: 'Name and date are required' });
   }
 
-  const appointment = new Appointment({ name, date });
+  const appointment = new Appointment({ name, date, status }); // Use status from request body
   try {
     const savedAppointment = await appointment.save();
     res.status(201).json(savedAppointment);
@@ -61,6 +64,7 @@ app.post('/appointments', async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 });
+
 
 app.delete('/appointments/:id', async (req, res) => {
   try {
@@ -116,6 +120,35 @@ app.delete('/appointments/:id', async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+
+app.put('/appointments/:id/status', async (req, res) => {
+  try {
+    const { status } = req.body; // Expecting { status: 'completed' }
+    const updatedAppointment = await Appointment.findByIdAndUpdate(
+      req.params.id,
+      { status },
+      { new: true, runValidators: true }
+    );
+    if (!updatedAppointment) {
+      return res.status(404).json({ message: 'Appointment not found' });
+    }
+    res.json(updatedAppointment);
+  } catch (error) {
+    console.error('Error updating appointment status:', error);
+    res.status(400).json({ message: error.message });
+  }
+});
+
+app.get('/appointments/status/:status', async (req, res) => {
+  try {
+    const appointments = await Appointment.find({ status: req.params.status });
+    res.json(appointments);
+  } catch (error) {
+    console.error('Error fetching appointments by status:', error);
+    res.status(500).json({ message: error.message });
+  }
+});
+
 
 // Start the server
 app.listen(port, () => {
