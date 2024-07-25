@@ -55,5 +55,5 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 ## Contact
 
 - **Author:** Pratik Lahiri
-- **Email:** [your.email@example.com](mailto:your.email@example.com)
+- **Email:** [pratiklahiri21@gmail.com](mailto:pratiklahiri21@gmail.com)
 - **GitHub:** [Pratik Lahiri GitHub](https://github.com/lahiripratik)
