@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import './Appointments.css'; // Import the CSS file
 
 function Appointments() {
   const [appointments, setAppointments] = useState([]);
   const [newAppointment, setNewAppointment] = useState({ name: '', date: '' });
+  const navigate = useNavigate();
+
 
   // Fetch appointments from the backend when the component mounts
   useEffect(() => {
@@ -32,27 +36,34 @@ function Appointments() {
     setNewAppointment({ name: '', date: '' });
   };
 
+  const goHome = () => {
+    navigate('/');
+  };
+  
   return (
-    <div>
+    <div className="appointments-container">
       <h1>Manage Appointments</h1>
-      <form onSubmit={addAppointment}>
+      <button className="home-button" onClick={goHome}>Go to Home</button>
+      <form onSubmit={addAppointment} className="appointment-form">
         <input
           type="text"
           placeholder="Patient Name"
           value={newAppointment.name}
           onChange={(e) => setNewAppointment({ ...newAppointment, name: e.target.value })}
+          className="input-field"
         />
         <input
           type="date"
           value={newAppointment.date}
           onChange={(e) => setNewAppointment({ ...newAppointment, date: e.target.value })}
+          className="input-field"
         />
-        <button type="submit">Add Appointment</button>
+        <button type="submit" className="submit-button">Add Appointment</button>
       </form>
-      <ul>
+      <ul className="appointment-list">
         {Array.isArray(appointments) ? (
           appointments.map((appointment, index) => (
-            <li key={index}>
+            <li key={index} className="appointment-item">
               {appointment.name} - {appointment.date}
             </li>
           ))
